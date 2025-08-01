@@ -1,0 +1,29 @@
+# DevPort .gitignore
+
+# Environment variables
+.env
+.env.local
+.env.production
+
+# Django
+*.log
+*.pot
+*.pyc
+__pycache__/
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Media files (user uploads)
+media/
+staticfiles/
+
+# Logs
+logs/
+*.log
+
+# Virtual environment
+venv/
+env/
+ENV/
+.venv/
