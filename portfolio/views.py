@@ -136,3 +136,137 @@ def portfolio_preview(request, slug):
         context['skills_by_category'][skill.category].append(skill)
     
     return render(request, f'portfolio/themes/{portfolio.theme}.html', context)
+
+def portfolio_public(request, slug):
+    """Public portfolio view"""
+    portfolio = get_object_or_404(Portfolio, slug=slug, is_public=True)
+
+    context = {
+        'portfolio': portfolio,
+        'user_profile': portfolio.user.profile,
+        'education_list': portfolio.education.all(),
+        'experience_list': portfolio.experience.all(),
+        'skills_by_category': {},
+        'projects_list': portfolio.projects.all(),
+        'certifications_list': portfolio.certifications.all(),
+    }
+
+    # Group skills by category
+    for skill in portfolio.skills.all():
+        if skill.category not in context['skills_by_category']:
+            context['skills_by_category'][skill.category] = []
+        context['skills_by_category'][skill.category].append(skill)
+    
+    return render(request, f'portfolio/themes/{portfolio.theme}.html', context)
+
+@login_required
+def portfolio_delete(request, slug):
+    """Delete Portfolio view"""
+    portfolio = get_object_or_404(Portfolio, slug=slug, User=request.user)
+
+    if request.method == 'POST':
+        portfolio.delete()
+        messages.success(request, 'Portfolio deleted successfully!')
+        return redirect('portfolio:dashboard')
+    
+    return render(request, 'portfolio/portfolio_delete.html', {'portfolio': portfolio})
+
+# AJAX views for dynamic form handling
+@login_required
+def add_education(request, slug):
+    """Add education entry via AJAX"""
+    portfolio = get_object_or_404(Portfolio, slug=slug, user=request.user)
+    
+    if request.method == 'POST':
+        form = EducationForm(request.POST)
+        if form.is_valid():
+            education = form.save(commit=False)
+            education.portfolio = portfolio
+            education.save()
+            return JsonResponse({'success': True, 'message': 'Education added successfully!'})
+        else:
+            return JsonResponse({'success': False, 'errors': form.errors})
+    
+    return JsonResponse({'success': False, 'message': 'Invalid request'})
+
+@login_required
+def add_experience(request, slug):
+    """Add experience entry via AJAX"""
+    portfolio = get_object_or_404(Portfolio, slug=slug, user=request.user)
+    
+    if request.method == 'POST':
+        form = ExperienceForm(request.POST)
+        if form.is_valid():
+            experience = form.save(commit=False)
+            experience.portfolio = portfolio
+            experience.save()
+            return JsonResponse({'success': True, 'message': 'Experience added successfully!'})
+        else:
+            return JsonResponse({'success': False, 'errors': form.errors})
+    
+    return JsonResponse({'success': False, 'message': 'Invalid request'})
+
+@login_required
+def add_skill(request, slug):
+    """Add skill entry via AJAX"""
+    portfolio = get_object_or_404(Portfolio, slug=slug, user=request.user)
+    
+    if request.method == 'POST':
+        form = SkillForm(request.POST)
+        if form.is_valid():
+            skill = form.save(commit=False)
+            skill.portfolio = portfolio
+            skill.save()
+            return JsonResponse({'success': True, 'message': 'Skill added successfully!'})
+        else:
+            return JsonResponse({'success': False, 'errors': form.errors})
+    
+    return JsonResponse({'success': False, 'message': 'Invalid request'})
+
+@login_required
+def add_project(request, slug):
+    """Add project entry via AJAX"""
+    portfolio = get_object_or_404(Portfolio, slug=slug, user=request.user)
+    
+    if request.method == 'POST':
+        form = ProjectForm(request.POST, request.FILES)
+        if form.is_valid():
+            project = form.save(commit=False)
+            project.portfolio = portfolio
+            project.save()
+            return JsonResponse({'success': True, 'message': 'Project added successfully!'})
+        else:
+            return JsonResponse({'success': False, 'errors': form.errors})
+    
+    return JsonResponse({'success': False, 'message': 'Invalid request'})
+
+@login_required
+def add_certification(request, slug):
+    """Add certification entry via AJAX"""
+    portfolio = get_object_or_404(Portfolio, slug=slug, user=request.user)
+    
+    if request.method == 'POST':
+        form = CertificationForm(request.POST)
+        if form.is_valid():
+            certification = form.save(commit=False)
+            certification.portfolio = portfolio
+            certification.save()
+            return JsonResponse({'success': True, 'message': 'Certification added successfully!'})
+        else:
+            return JsonResponse({'success': False, 'errors': form.errors})
+    
+    return JsonResponse({'success': False, 'message': 'Invalid request'})
+
+@login_required
+def portfolio_export_zip(request, slug):
+    """Export portfolio as ZIP file"""
+    portfolio = get_object_or_404(Portfolio, slug=slug, user=request.user)
+    # Implementation for ZIP export
+    pass
+
+@login_required
+def portfolio_export_pdf(request, slug):
+    """Export portfolio as PDF file"""
+    portfolio = get_object_or_404(Portfolio, slug=slug, user=request.user)
+    # Implementation for PDF export
+    pass
