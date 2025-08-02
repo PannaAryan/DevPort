@@ -97,3 +97,42 @@ def portfolio_create(request):
         form = PortfolioForm()
     
     return render(request, 'portfolio/portfolio_create.html', {'form': form})
+
+@login_required
+def portfolio_edit(request, slug):
+    """Edit portfolio view"""
+    portfolio = get_object_or_404(Portfolio, slug=slug, user=request.user)
+
+    context = {
+        'portfolio': portfolio,
+        'education_list': portfolio.education.all(),
+        'experience_list': portfolio.experience.all(),
+        'skills_list': portfolio.skills.all(),
+        'projects_list': portfolio.projects.all(),
+        'certifications_list': portfolio.certifications.all(),
+    }
+
+    return render(request, 'portfolio/portfolio_edit.html', context)
+
+@login_required
+def portfolio_preview(request, slug):
+    """Portfolio preview view"""
+    portfolio = get_object_or_404(Portfolio, slug=slug, user=request.user)
+
+    context = {
+        'portfolio': portfolio,
+        'user_profile': portfolio.user.profile,
+        'educaton_list': portfolio.education.all(),
+        'experience_list': portfolio.experience.all(),
+        'skills_by_category': portfolio.skills.all(),
+        'projects_list': portfolio.skills.projects.all(),
+        'certifications_list': portfolio.certifications.all(),
+    }
+
+    # Group skills by category
+    for skill in portfolio.skills.all():
+        if skill.category not in context['skills_by_category']:
+            context['skills_by_category'][skill.category] = []
+        context['skills_by_category'][skill.category].append(skill)
+    
+    return render(request, f'portfolio/themes/{portfolio.theme}.html', context)
