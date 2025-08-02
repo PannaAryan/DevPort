@@ -256,3 +256,17 @@ def add_certification(request, slug):
             return JsonResponse({'success': False, 'errors': form.errors})
     
     return JsonResponse({'success': False, 'message': 'Invalid request'})
+
+@login_required
+def portfolio_export_zip(request, slug):
+    """Export portfolio as ZIP file"""
+    portfolio = get_object_or_404(Portfolio, slug=slug, user=request.user)
+    # Implementation for ZIP export
+    pass
+
+@login_required
+def portfolio_export_pdf(request, slug):
+    """Export portfolio as PDF file"""
+    portfolio = get_object_or_404(Portfolio, slug=slug, user=request.user)
+    # Implementation for PDF export
+    pass
