@@ -3,8 +3,6 @@
 
 🚀 **A complete Django-based web platform where developers can create, preview, and export professional portfolios in minutes.**
 
-![DevPort Banner](https://via.placeholder.com/800x200/1e293b/ffffff?text=DevPort+-+Build+Your+Developer+Portfolio)
-
 ## 🎯 Overview
 
 DevPort is a comprehensive web application that allows developers to:
