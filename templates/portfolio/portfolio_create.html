@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Portfolio - DevPort{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">Create New Portfolio</h1>
+        <p class="text-gray-600 mt-2">Start building your professional developer portfolio.</p>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-lg p-8">
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <div>
+                <label for="{{ form.title.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                    Portfolio Title *
+                </label>
+                {{ form.title }}
+                {% if form.title.errors %}
+                    <p class="mt-1 text-sm text-red-600">{{ form.title.errors.0 }}</p>
+                {% endif %}
+                <p class="mt-1 text-sm text-gray-500">
+                    This will be the main title of your portfolio (e.g., "John Doe - Full Stack Developer")
+                </p>
+            </div>
+
+            <div>
+                <label for="{{ form.theme.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                    Theme
+                </label>
+                <select name="theme" id="{{ form.theme.id_for_label }}" class="form-select">
+                    <option value="minimal_dark">Minimal Dark</option>
+                    <option value="modern_light">Modern Light</option>
+                    <option value="creative">Creative</option>
+                </select>
+                {% if form.theme.errors %}
+                    <p class="mt-1 text-sm text-red-600">{{ form.theme.errors.0 }}</p>
+                {% endif %}
+                <p class="mt-1 text-sm text-gray-500">
+                    You can change the theme later in the editor.
+                </p>
+            </div>
+
+            <div class="flex items-center">
+                {{ form.is_public }}
+                <label for="{{ form.is_public.id_for_label }}" class="ml-2 block text-sm text-gray-700">
+                    Make this portfolio public
+                </label>
+            </div>
+            <p class="text-sm text-gray-500">
+                Public portfolios can be viewed by anyone with the link. You can change this setting later.
+            </p>
+
+            <div class="flex justify-between pt-6">
+                <a href="{% url 'portfolio:dashboard' %}" class="btn-secondary">
+                    <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+                </a>
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-plus mr-2"></i>Create Portfolio
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Preview Section -->
+    <div class="mt-8 bg-gray-100 rounded-lg p-6">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">What's Next?</h3>
+        <div class="grid md:grid-cols-2 gap-4">
+            <div class="flex items-start">
+                <div class="bg-primary-100 p-2 rounded-full mr-3 mt-1">
+                    <i class="fas fa-user text-primary-600"></i>
+                </div>
+                <div>
+                    <h4 class="font-medium text-gray-900">Personal Information</h4>
+                    <p class="text-sm text-gray-600">Add your bio, contact details, and profile picture.</p>
+                </div>
+            </div>
+            <div class="flex items-start">
+                <div class="bg-primary-100 p-2 rounded-full mr-3 mt-1">
+                    <i class="fas fa-code text-primary-600"></i>
+                </div>
+                <div>
+                    <h4 class="font-medium text-gray-900">Projects & Skills</h4>
+                    <p class="text-sm text-gray-600">Showcase your best work and technical skills.</p>
+                </div>
+            </div>
+            <div class="flex items-start">
+                <div class="bg-primary-100 p-2 rounded-full mr-3 mt-1">
+                    <i class="fas fa-briefcase text-primary-600"></i>
+                </div>
+                <div>
+                    <h4 class="font-medium text-gray-900">Experience</h4>
+                    <p class="text-sm text-gray-600">Add your work experience and education.</p>
+                </div>
+            </div>
+            <div class="flex items-start">
+                <div class="bg-primary-100 p-2 rounded-full mr-3 mt-1">
+                    <i class="fas fa-download text-primary-600"></i>
+                </div>
+                <div>
+                    <h4 class="font-medium text-gray-900">Export & Share</h4>
+                    <p class="text-sm text-gray-600">Download as ZIP/PDF or share the public link.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
