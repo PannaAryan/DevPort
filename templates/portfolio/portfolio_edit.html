@@ -1,0 +1,307 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit {{ portfolio.title }} - DevPort{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+    <div class="flex justify-between items-center">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900">{{ portfolio.title }}</h1>
+            <p class="text-gray-600 mt-1">Build and customize your portfolio</p>
+        </div>
+        <div class="flex space-x-3">
+            <a href="{% url 'portfolio:preview' portfolio.slug %}" 
+               class="btn-secondary" target="_blank">
+                <i class="fas fa-eye mr-2"></i>Preview
+            </a>
+            <a href="{% url 'portfolio:dashboard' %}" class="btn-primary">
+                <i class="fas fa-arrow-left mr-2"></i>Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="grid lg:grid-cols-4 gap-6">
+    <!-- Sidebar Navigation -->
+    <div class="lg:col-span-1">
+        <div class="bg-white rounded-lg shadow-lg p-4 sticky top-6">
+            <nav class="space-y-2">
+                <a href="#personal-info" class="nav-link flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100 transition duration-200">
+                    <i class="fas fa-user mr-3"></i>Personal Info
+                </a>
+                <a href="#experience" class="nav-link flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100 transition duration-200">
+                    <i class="fas fa-briefcase mr-3"></i>Experience
+                </a>
+                <a href="#education" class="nav-link flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100 transition duration-200">
+                    <i class="fas fa-graduation-cap mr-3"></i>Education
+                </a>
+                <a href="#skills" class="nav-link flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100 transition duration-200">
+                    <i class="fas fa-code mr-3"></i>Skills
+                </a>
+                <a href="#projects" class="nav-link flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100 transition duration-200">
+                    <i class="fas fa-folder mr-3"></i>Projects
+                </a>
+                <a href="#certifications" class="nav-link flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100 transition duration-200">
+                    <i class="fas fa-certificate mr-3"></i>Certifications
+                </a>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="lg:col-span-3 space-y-8">
+        <!-- Personal Information Section -->
+        <section id="personal-info" class="bg-white rounded-lg shadow-lg p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold text-gray-900">
+                    <i class="fas fa-user mr-2 text-primary-600"></i>Personal Information
+                </h2>
+                <a href="{% url 'portfolio:profile_edit' %}" class="text-primary-600 hover:text-primary-700 text-sm font-medium">
+                    <i class="fas fa-edit mr-1"></i>Edit Profile
+                </a>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="font-medium text-gray-900 mb-2">Basic Info</h3>
+                    <p class="text-gray-600">{{ user.first_name }} {{ user.last_name }}</p>
+                    <p class="text-gray-600">{{ user.email }}</p>
+                    {% if user.profile.location %}
+                        <p class="text-gray-600">{{ user.profile.location }}</p>
+                    {% endif %}
+                </div>
+                <div>
+                    <h3 class="font-medium text-gray-900 mb-2">Bio</h3>
+                    {% if user.profile.bio %}
+                        <p class="text-gray-600">{{ user.profile.bio|truncatewords:20 }}</p>
+                    {% else %}
+                        <p class="text-gray-400 italic">No bio added yet</p>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+
+        <!-- Experience Section -->
+        <section id="experience" class="bg-white rounded-lg shadow-lg p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold text-gray-900">
+                    <i class="fas fa-briefcase mr-2 text-primary-600"></i>Work Experience
+                </h2>
+                <button class="btn-primary" onclick="openModal('experienceModal')">
+                    <i class="fas fa-plus mr-2"></i>Add Experience
+                </button>
+            </div>
+            
+            <div id="experience-list" class="space-y-4">
+                {% for exp in experience_list %}
+                    <div class="border border-gray-200 rounded-lg p-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="font-medium text-gray-900">{{ exp.position }}</h3>
+                                <p class="text-primary-600">{{ exp.company }}</p>
+                                <p class="text-sm text-gray-600">
+                                    {{ exp.start_date|date:"M Y" }} - 
+                                    {% if exp.is_current %}Present{% else %}{{ exp.end_date|date:"M Y" }}{% endif %}
+                                </p>
+                                <p class="text-gray-700 mt-2">{{ exp.description|truncatewords:15 }}</p>
+                            </div>
+                            <button class="text-gray-400 hover:text-red-600">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="text-center py-8 text-gray-500">
+                        <i class="fas fa-briefcase text-4xl mb-4"></i>
+                        <p>No work experience added yet</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- Education Section -->
+        <section id="education" class="bg-white rounded-lg shadow-lg p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold text-gray-900">
+                    <i class="fas fa-graduation-cap mr-2 text-primary-600"></i>Education
+                </h2>
+                <button class="btn-primary" onclick="openModal('educationModal')">
+                    <i class="fas fa-plus mr-2"></i>Add Education
+                </button>
+            </div>
+            
+            <div id="education-list" class="space-y-4">
+                {% for edu in education_list %}
+                    <div class="border border-gray-200 rounded-lg p-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="font-medium text-gray-900">{{ edu.degree }}</h3>
+                                <p class="text-primary-600">{{ edu.institution }}</p>
+                                {% if edu.field_of_study %}
+                                    <p class="text-sm text-gray-600">{{ edu.field_of_study }}</p>
+                                {% endif %}
+                                <p class="text-sm text-gray-600">
+                                    {{ edu.start_date|date:"Y" }} - 
+                                    {% if edu.end_date %}{{ edu.end_date|date:"Y" }}{% else %}Present{% endif %}
+                                </p>
+                            </div>
+                            <button class="text-gray-400 hover:text-red-600">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="text-center py-8 text-gray-500">
+                        <i class="fas fa-graduation-cap text-4xl mb-4"></i>
+                        <p>No education added yet</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section id="skills" class="bg-white rounded-lg shadow-lg p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold text-gray-900">
+                    <i class="fas fa-code mr-2 text-primary-600"></i>Skills
+                </h2>
+                <button class="btn-primary" onclick="openModal('skillModal')">
+                    <i class="fas fa-plus mr-2"></i>Add Skill
+                </button>
+            </div>
+            
+            <div id="skills-list">
+                {% if skills_list %}
+                    <div class="flex flex-wrap gap-2">
+                        {% for skill in skills_list %}
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-100 text-primary-800">
+                                {{ skill.name }}
+                                <button class="ml-2 text-primary-600 hover:text-red-600">
+                                    <i class="fas fa-times text-xs"></i>
+                                </button>
+                            </span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-8 text-gray-500">
+                        <i class="fas fa-code text-4xl mb-4"></i>
+                        <p>No skills added yet</p>
+                    </div>
+                {% endif %}
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section id="projects" class="bg-white rounded-lg shadow-lg p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold text-gray-900">
+                    <i class="fas fa-folder mr-2 text-primary-600"></i>Projects
+                </h2>
+                <button class="btn-primary" onclick="openModal('projectModal')">
+                    <i class="fas fa-plus mr-2"></i>Add Project
+                </button>
+            </div>
+            
+            <div id="projects-list" class="grid md:grid-cols-2 gap-4">
+                {% for project in projects_list %}
+                    <div class="border border-gray-200 rounded-lg p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-medium text-gray-900">{{ project.name }}</h3>
+                            <button class="text-gray-400 hover:text-red-600">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        <p class="text-gray-600 text-sm mb-3">{{ project.description|truncatewords:10 }}</p>
+                        <div class="flex flex-wrap gap-1 mb-3">
+                            {% for tech in project.get_tech_list %}
+                                <span class="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded">{{ tech }}</span>
+                            {% endfor %}
+                        </div>
+                        <div class="flex space-x-2">
+                            {% if project.github_url %}
+                                <a href="{{ project.github_url }}" class="text-gray-600 hover:text-gray-900" target="_blank">
+                                    <i class="fab fa-github"></i>
+                                </a>
+                            {% endif %}
+                            {% if project.live_url %}
+                                <a href="{{ project.live_url }}" class="text-primary-600 hover:text-primary-700" target="_blank">
+                                    <i class="fas fa-external-link-alt"></i>
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="col-span-2 text-center py-8 text-gray-500">
+                        <i class="fas fa-folder text-4xl mb-4"></i>
+                        <p>No projects added yet</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- Certifications Section -->
+        <section id="certifications" class="bg-white rounded-lg shadow-lg p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold text-gray-900">
+                    <i class="fas fa-certificate mr-2 text-primary-600"></i>Certifications
+                </h2>
+                <button class="btn-primary" onclick="openModal('certificationModal')">
+                    <i class="fas fa-plus mr-2"></i>Add Certification
+                </button>
+            </div>
+            
+            <div id="certifications-list" class="space-y-4">
+                {% for cert in certifications_list %}
+                    <div class="border border-gray-200 rounded-lg p-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="font-medium text-gray-900">{{ cert.name }}</h3>
+                                <p class="text-primary-600">{{ cert.issuing_organization }}</p>
+                                <p class="text-sm text-gray-600">
+                                    Issued {{ cert.issue_date|date:"M Y" }}
+                                    {% if cert.expiry_date %} • Expires {{ cert.expiry_date|date:"M Y" }}{% endif %}
+                                </p>
+                            </div>
+                            <button class="text-gray-400 hover:text-red-600">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="text-center py-8 text-gray-500">
+                        <i class="fas fa-certificate text-4xl mb-4"></i>
+                        <p>No certifications added yet</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+</div>
+
+<!-- Modals will be added here -->
+{% include 'portfolio/modals.html' %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Modal functionality
+    function openModal(modalId) {
+        document.getElementById(modalId).classList.remove('hidden');
+    }
+    
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.add('hidden');
+    }
+    
+    // Smooth scrolling for navigation
+    document.querySelectorAll('.nav-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            target.scrollIntoView({ behavior: 'smooth' });
+        });
+    });
+</script>
+{% endblock %}
+
