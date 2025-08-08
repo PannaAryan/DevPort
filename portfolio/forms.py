@@ -2,103 +2,180 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from .models import UserProfile, Portfolio, Education, Experience, Skill, Project, Certification
+from .image_utils import image_handler
+
 
 class CustomUserCreationForm(UserCreationForm):
+    """Custom user registration form"""
     email = forms.EmailField(required=True)
     first_name = forms.CharField(max_length=30, required=True)
     last_name = forms.CharField(max_length=30, required=True)
 
     class Meta:
         model = User
-        fields = ("username", "email", "first_name", "last_name", "password1", "password2")
+        fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Add CSS classes for styling
+        for field_name, field in self.fields.items():
+            field.widget.attrs['class'] = 'form-input'
+            field.widget.attrs['placeholder'] = field.label
 
     def save(self, commit=True):
         user = super().save(commit=False)
-        user.email = self.cleaned_data["email"]
-        user.first_name = self.cleaned_data["first_name"]
-        user.last_name = self.cleaned_data["last_name"]
+        user.email = self.cleaned_data['email']
+        user.first_name = self.cleaned_data['first_name']
+        user.last_name = self.cleaned_data['last_name']
         if commit:
             user.save()
+            # Create user profile
+            UserProfile.objects.create(user=user)
         return user
 
+
 class UserProfileForm(forms.ModelForm):
+    """Form for editing user profile with enhanced image handling"""
     class Meta:
         model = UserProfile
-        fields = ['bio', 'location', 'birth_date', 'profile_picture', 'phone', 'website', 
-                 'github_url', 'linkedin_url', 'twitter_url']
+        fields = ['bio', 'profile_picture', 'location', 'website', 'github_url', 'linkedin_url', 'twitter_url']
         widgets = {
-            'birth_date': forms.DateInput(attrs={'type': 'date'}),
-            'bio': forms.Textarea(attrs={'rows': 4}),
+            'bio': forms.Textarea(attrs={'rows': 4, 'class': 'form-textarea', 'placeholder': 'Tell us about yourself...'}),
+            'location': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'City, Country'}),
+            'website': forms.URLInput(attrs={'class': 'form-input', 'placeholder': 'https://yourwebsite.com'}),
+            'github_url': forms.URLInput(attrs={'class': 'form-input', 'placeholder': 'https://github.com/yourusername'}),
+            'linkedin_url': forms.URLInput(attrs={'class': 'form-input', 'placeholder': 'https://linkedin.com/in/yourusername'}),
+            'twitter_url': forms.URLInput(attrs={'class': 'form-input', 'placeholder': 'https://twitter.com/yourusername'}),
+            'profile_picture': forms.FileInput(attrs={'class': 'form-file-input', 'accept': 'image/*'}),
         }
+    
+    def clean_profile_picture(self):
+        """Validate and process profile picture"""
+        profile_picture = self.cleaned_data.get('profile_picture')
+        
+        if profile_picture:
+            # Validate the image
+            is_valid, message = image_handler.validate_image(profile_picture)
+            if not is_valid:
+                raise forms.ValidationError(message)
+            
+            # Process the image
+            processed_image = image_handler.process_profile_picture(
+                profile_picture, 
+                self.instance.user.id if self.instance.user else 'temp'
+            )
+            
+            if processed_image:
+                return processed_image
+            else:
+                raise forms.ValidationError("Failed to process the image. Please try a different image.")
+        
+        return profile_picture
+
 
 class PortfolioForm(forms.ModelForm):
+    """Form for creating/editing portfolio"""
     class Meta:
         model = Portfolio
         fields = ['title', 'theme', 'is_public']
         widgets = {
-            'title': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Enter portfolio title'
-            }),
-            'theme': forms.Select(attrs={
-                'class': 'form-control'
-            }),
-            'is_public': forms.CheckboxInput(attrs={
-                'class': 'form-check-input'
-            })
+            'title': forms.TextInput(attrs={'class': 'form-input'}),
+            'theme': forms.Select(attrs={'class': 'form-select'}),
+            'is_public': forms.CheckboxInput(attrs={'class': 'form-checkbox'}),
         }
+
 
 class EducationForm(forms.ModelForm):
+    """Form for education entries"""
     class Meta:
         model = Education
-        fields = ['institution', 'degree', 'field_of_study', 'start_date', 'end_date', 'description', 'grade']
+        fields = ['institution', 'degree', 'field_of_study', 'start_date', 'end_date', 'description']
         widgets = {
-            'start_date': forms.DateInput(attrs={'type': 'date'}),
-            'end_date': forms.DateInput(attrs={'type': 'date'}),
-            'description': forms.Textarea(attrs={'rows': 3}),
+            'institution': forms.TextInput(attrs={'class': 'form-input'}),
+            'degree': forms.TextInput(attrs={'class': 'form-input'}),
+            'field_of_study': forms.TextInput(attrs={'class': 'form-input'}),
+            'start_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-input'}),
+            'end_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-input'}),
+            'description': forms.Textarea(attrs={'rows': 3, 'class': 'form-textarea'}),
         }
+
 
 class ExperienceForm(forms.ModelForm):
+    """Form for experience entries"""
     class Meta:
         model = Experience
-        fields = ['company', 'position', 'location', 'start_date', 'end_date', 'description', 'is_current']
+        fields = ['company', 'position', 'location', 'start_date', 'end_date', 'is_current', 'description']
         widgets = {
-            'start_date': forms.DateInput(attrs={'type': 'date'}),
-            'end_date': forms.DateInput(attrs={'type': 'date'}),
-            'description': forms.Textarea(attrs={'rows': 4}),
+            'company': forms.TextInput(attrs={'class': 'form-input'}),
+            'position': forms.TextInput(attrs={'class': 'form-input'}),
+            'location': forms.TextInput(attrs={'class': 'form-input'}),
+            'start_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-input'}),
+            'end_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-input'}),
+            'is_current': forms.CheckboxInput(attrs={'class': 'form-checkbox'}),
+            'description': forms.Textarea(attrs={'rows': 4, 'class': 'form-textarea'}),
         }
 
+
 class SkillForm(forms.ModelForm):
+    """Form for skill entries"""
     class Meta:
         model = Skill
         fields = ['name', 'category', 'proficiency']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-input'}),
+            'category': forms.Select(attrs={'class': 'form-select'}),
+            'proficiency': forms.NumberInput(attrs={'min': 1, 'max': 5, 'class': 'form-input'}),
+        }
+
 
 class ProjectForm(forms.ModelForm):
+    """Form for project entries with enhanced image handling"""
     class Meta:
         model = Project
-        fields = ['title', 'description', 'technologies', 'github_url', 'live_url', 'image', 
-                 'start_date', 'end_date', 'featured']
+        fields = ['name', 'description', 'tech_stack', 'github_url', 'live_url', 'image', 'featured']
         widgets = {
-            'start_date': forms.DateInput(attrs={'type': 'date'}),
-            'end_date': forms.DateInput(attrs={'type': 'date'}),
-            'description': forms.Textarea(attrs={'rows': 4}),
+            'name': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'Project name'}),
+            'description': forms.Textarea(attrs={'rows': 4, 'class': 'form-textarea', 'placeholder': 'Describe your project...'}),
+            'tech_stack': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'e.g., Python, Django, JavaScript, React'}),
+            'github_url': forms.URLInput(attrs={'class': 'form-input', 'placeholder': 'https://github.com/yourusername/project'}),
+            'live_url': forms.URLInput(attrs={'class': 'form-input', 'placeholder': 'https://yourproject.com'}),
+            'image': forms.FileInput(attrs={'class': 'form-file-input', 'accept': 'image/*'}),
+            'featured': forms.CheckboxInput(attrs={'class': 'form-checkbox'}),
         }
+    
+    def clean_image(self):
+        """Validate and process project image"""
+        image = self.cleaned_data.get('image')
+        
+        if image:
+            # Validate the image
+            is_valid, message = image_handler.validate_image(image)
+            if not is_valid:
+                raise forms.ValidationError(message)
+            
+            # Process the image
+            project_name = self.cleaned_data.get('name', 'project')
+            processed_image = image_handler.process_project_image(image, project_name)
+            
+            if processed_image:
+                return processed_image
+            else:
+                raise forms.ValidationError("Failed to process the image. Please try a different image.")
+        
+        return image
+
 
 class CertificationForm(forms.ModelForm):
+    """Form for certification entries"""
     class Meta:
         model = Certification
-        fields = ['name', 'issuing_organization', 'issue_date', 'expiration_date', 'credential_id', 'credential_url']
+        fields = ['name', 'issuing_organization', 'issue_date', 'expiry_date', 'credential_id', 'credential_url']
         widgets = {
-            'issue_date': forms.DateInput(attrs={'type': 'date'}),
-            'expiration_date': forms.DateInput(attrs={'type': 'date'}),
+            'name': forms.TextInput(attrs={'class': 'form-input'}),
+            'issuing_organization': forms.TextInput(attrs={'class': 'form-input'}),
+            'issue_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-input'}),
+            'expiry_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-input'}),
+            'credential_id': forms.TextInput(attrs={'class': 'form-input'}),
+            'credential_url': forms.URLInput(attrs={'class': 'form-input'}),
         }
 
-class CVUploadForm(forms.Form):
-    cv_file = forms.FileField(
-        label='Upload CV/Resume',
-        help_text='Upload your CV/Resume in PDF format to auto-fill portfolio data',
-        widget=forms.FileInput(attrs={
-            'accept': '.pdf,.doc,.docx',
-            'class': 'form-control'
-        })
-    )
