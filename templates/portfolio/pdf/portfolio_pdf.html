@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ portfolio.title }} - {{ user_profile.user.first_name }} {{ user_profile.user.last_name }}</title>
+    <meta name="author" content="{{ user_profile.user.first_name }} {{ user_profile.user.last_name }}">
+    <meta name="description" content="Professional portfolio of {{ user_profile.user.first_name }} {{ user_profile.user.last_name }}">
+</head>
+<body>
+    <!-- Header Section -->
+    <header class="pdf-header">
+        {% if user_profile.profile_picture %}
+            <img src="{{ base_url }}{{ user_profile.profile_picture.url }}" alt="Profile Picture" class="pdf-profile-picture">
+        {% endif %}
+        
+        <h1 class="pdf-name">{{ user_profile.user.first_name }} {{ user_profile.user.last_name }}</h1>
+        <div class="pdf-title">{{ portfolio.title }}</div>
+        
+        {% if user_profile.bio %}
+            <div class="pdf-bio">{{ user_profile.bio }}</div>
+        {% endif %}
+        
+        <div class="pdf-contact">
+            {% if user_profile.user.email %}
+                <div class="pdf-contact-item">
+                    <span>📧</span>
+                    <span>{{ user_profile.user.email }}</span>
+                </div>
+            {% endif %}
+            {% if user_profile.location %}
+                <div class="pdf-contact-item">
+                    <span>📍</span>
+                    <span>{{ user_profile.location }}</span>
+                </div>
+            {% endif %}
+            {% if user_profile.website %}
+                <div class="pdf-contact-item">
+                    <span>🌐</span>
+                    <span>{{ user_profile.website }}</span>
+                </div>
+            {% endif %}
+            {% if user_profile.github_url %}
+                <div class="pdf-contact-item">
+                    <span>💻</span>
+                    <span>{{ user_profile.github_url }}</span>
+                </div>
+            {% endif %}
+            {% if user_profile.linkedin_url %}
+                <div class="pdf-contact-item">
+                    <span>💼</span>
+                    <span>{{ user_profile.linkedin_url }}</span>
+                </div>
+            {% endif %}
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Experience Section -->
+        {% if experience_list %}
+            <section class="pdf-section">
+                <h2 class="pdf-section-title">Professional Experience</h2>
+                {% for experience in experience_list %}
+                    <div class="pdf-timeline-item">
+                        <div class="pdf-timeline-header">
+                            <div>
+                                <div class="pdf-timeline-title">{{ experience.position }}</div>
+                                <div class="pdf-timeline-company">{{ experience.company }}</div>
+                                {% if experience.location %}
+                                    <div class="pdf-timeline-location">📍 {{ experience.location }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="pdf-timeline-date">
+                                {{ experience.start_date|date:"M Y" }} - 
+                                {% if experience.is_current %}Present{% else %}{{ experience.end_date|date:"M Y" }}{% endif %}
+                            </div>
+                        </div>
+                        {% if experience.description %}
+                            <div class="pdf-timeline-description">{{ experience.description|linebreaks }}</div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </section>
+        {% endif %}
+
+        <!-- Education Section -->
+        {% if education_list %}
+            <section class="pdf-section">
+                <h2 class="pdf-section-title">Education</h2>
+                {% for education in education_list %}
+                    <div class="pdf-timeline-item">
+                        <div class="pdf-timeline-header">
+                            <div>
+                                <div class="pdf-timeline-title">{{ education.degree }}</div>
+                                <div class="pdf-timeline-company">{{ education.institution }}</div>
+                                {% if education.field_of_study %}
+                                    <div class="pdf-timeline-location">📚 {{ education.field_of_study }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="pdf-timeline-date">
+                                {{ education.start_date|date:"Y" }} - {{ education.end_date|date:"Y" }}
+                            </div>
+                        </div>
+                        {% if education.description %}
+                            <div class="pdf-timeline-description">{{ education.description|linebreaks }}</div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </section>
+        {% endif %}
+
+        <!-- Skills Section -->
+        {% if skills_by_category %}
+            <section class="pdf-section">
+                <h2 class="pdf-section-title">Technical Skills</h2>
+                <div class="pdf-skills-grid">
+                    {% for category, skills in skills_by_category.items %}
+                        <div class="pdf-skill-category">
+                            <h3>
+                                {% if category == 'programming' %}
+                                    💻 Programming Languages
+                                {% elif category == 'frameworks' %}
+                                    🔧 Frameworks & Libraries
+                                {% elif category == 'databases' %}
+                                    🗄️ Databases
+                                {% elif category == 'tools' %}
+                                    🛠️ Tools & Platforms
+                                {% elif category == 'design' %}
+                                    🎨 Design & UI/UX
+                                {% else %}
+                                    ⭐ {{ category|title }}
+                                {% endif %}
+                            </h3>
+                            {% for skill in skills %}
+                                <div class="pdf-skill-item">
+                                    <span class="pdf-skill-name">{{ skill.name }}</span>
+                                    <div class="pdf-skill-level">
+                                        {% for i in "12345" %}
+                                            <div class="pdf-skill-dot {% if forloop.counter <= skill.proficiency %}filled{% endif %}"></div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </section>
+        {% endif %}
+
+        <!-- Projects Section -->
+        {% if projects_list %}
+            <section class="pdf-section pdf-break-before">
+                <h2 class="pdf-section-title">Featured Projects</h2>
+                <div class="pdf-projects-grid">
+                    {% for project in projects_list %}
+                        <div class="pdf-project-card">
+                            <h3 class="pdf-project-title">{{ project.name }}</h3>
+                            <p class="pdf-project-description">{{ project.description }}</p>
+                            {% if project.technologies %}
+                                <div class="pdf-project-tech">
+                                    {% for tech in project.technologies|split:"," %}
+                                        <span class="pdf-tech-tag">{{ tech|strip }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="pdf-project-links">
+                                {% if project.github_url %}
+                                    <div>💻 Code: {{ project.github_url }}</div>
+                                {% endif %}
+                                {% if project.live_url %}
+                                    <div>🌐 Demo: {{ project.live_url }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </section>
+        {% endif %}
+
+        <!-- Certifications Section -->
+        {% if certifications_list %}
+            <section class="pdf-section">
+                <h2 class="pdf-section-title">Certifications & Awards</h2>
+                <div class="pdf-certifications-grid">
+                    {% for cert in certifications_list %}
+                        <div class="pdf-certification-item">
+                            <div class="pdf-certification-name">{{ cert.name }}</div>
+                            <div class="pdf-certification-org">{{ cert.issuing_organization }}</div>
+                            <div class="pdf-certification-date">
+                                📅 Issued: {{ cert.issue_date|date:"M Y" }}
+                                {% if cert.expiry_date %} • Expires: {{ cert.expiry_date|date:"M Y" }}{% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </section>
+        {% endif %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="pdf-footer">
+        <p>
+            This portfolio was generated on {{ "now"|date:"F d, Y" }} using DevPort. 
+            For the most up-to-date version, please visit the online portfolio.
+        </p>
+    </footer>
+</body>
+</html>
+
