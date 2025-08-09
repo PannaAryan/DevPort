@@ -1,86 +1,221 @@
 {% extends 'base.html' %}
-{% load static %}
 
 {% block title %}DevPort - Build Your Developer Portfolio{% endblock %}
 
 {% block content %}
 <!-- Hero Section -->
-<section class="hero-section bg-gradient-primary text-white py-5">
-    <div class="container">
-        <div class="row align-items-center min-vh-100">
-            <div class="col-lg-6">
-                <h1 class="display-4 fw-bold mb-4">
-                    Build Your Professional Developer Portfolio
-                </h1>
-                <p class="lead mb-4">
-                    Create stunning portfolio websites in minutes. No coding required. 
-                    Just fill out the form, choose a theme, and export your portfolio.
-                </p>
-                <div class="d-flex gap-3">
-                    <a href="{% url 'portfolio:register' %}" class="btn btn-light btn-lg">
-                        <i class="fas fa-rocket"></i> Get Started Free
+<section class="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <!-- Background Animation -->
+    <div class="absolute inset-0 opacity-20">
+        <div class="absolute top-10 left-10 w-72 h-72 bg-blue-300 rounded-full mix-blend-multiply filter blur-xl animate-pulse-slow"></div>
+        <div class="absolute top-10 right-10 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl animate-pulse-slow animation-delay-2000"></div>
+        <div class="absolute -bottom-8 left-20 w-72 h-72 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl animate-pulse-slow animation-delay-4000"></div>
+    </div>
+
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div class="fade-in">
+            <!-- Main Heading -->
+            <h1 class="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
+                Build Your
+                <span class="bg-gradient-to-r from-yellow-400 to-pink-400 bg-clip-text text-transparent">
+                    Dream Portfolio
+                </span>
+            </h1>
+            
+            <!-- Subtitle -->
+            <p class="text-xl md:text-2xl text-white/90 mb-8 max-w-3xl mx-auto leading-relaxed">
+                Create stunning developer portfolios in minutes with our intuitive builder. 
+                Choose from professional themes, export as ZIP or PDF, and share with the world.
+            </p>
+            
+            <!-- CTA Buttons -->
+            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'portfolio:dashboard' %}" class="btn-primary text-lg px-8 py-4 transform hover:scale-105 transition-all duration-300">
+                        <i class="fas fa-tachometer-alt mr-3"></i>
+                        Go to Dashboard
                     </a>
-                    <a href="#features" class="btn btn-outline-light btn-lg">
-                        <i class="fas fa-play"></i> Learn More
+                    <a href="{% url 'portfolio:portfolio_create' %}" class="btn-secondary text-lg px-8 py-4 transform hover:scale-105 transition-all duration-300">
+                        <i class="fas fa-plus mr-3"></i>
+                        Create New Portfolio
                     </a>
+                {% else %}
+                    <a href="{% url 'portfolio:register' %}" class="btn-primary text-lg px-8 py-4 transform hover:scale-105 transition-all duration-300">
+                        <i class="fas fa-rocket mr-3"></i>
+                        Get Started Free
+                    </a>
+                    <a href="{% url 'portfolio:login' %}" class="btn-secondary text-lg px-8 py-4 transform hover:scale-105 transition-all duration-300">
+                        <i class="fas fa-sign-in-alt mr-3"></i>
+                        Sign In
+                    </a>
+                {% endif %}
+            </div>
+            
+            <!-- Feature Highlights -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+                <div class="glass-effect rounded-2xl p-6 transform hover:scale-105 transition-all duration-300">
+                    <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-palette text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Professional Themes</h3>
+                    <p class="text-gray-600">Choose from 6+ stunning themes designed by professionals</p>
+                </div>
+                
+                <div class="glass-effect rounded-2xl p-6 transform hover:scale-105 transition-all duration-300">
+                    <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-download text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Export Anywhere</h3>
+                    <p class="text-gray-600">Download as ZIP, PDF, or share with public links</p>
+                </div>
+                
+                <div class="glass-effect rounded-2xl p-6 transform hover:scale-105 transition-all duration-300">
+                    <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-teal-500 rounded-xl flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-mobile-alt text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Mobile Ready</h3>
+                    <p class="text-gray-600">Fully responsive designs that look great on any device</p>
                 </div>
             </div>
-            <div class="col-lg-6">
-                <img src="{% static 'images/hero-illustration.svg' %}" alt="Portfolio Builder" class="img-fluid">
-            </div>
+        </div>
+    </div>
+    
+    <!-- Scroll Indicator -->
+    <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+        <div class="w-6 h-10 border-2 border-white/50 rounded-full flex justify-center">
+            <div class="w-1 h-3 bg-white/70 rounded-full mt-2 animate-pulse"></div>
         </div>
     </div>
 </section>
 
 <!-- Features Section -->
-<section id="features" class="py-5">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12 text-center mb-5">
-                <h2 class="display-5 fw-bold">Why Choose DevPort?</h2>
-                <p class="lead text-muted">Everything you need to create a professional portfolio</p>
-            </div>
+<section class="py-20 relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl md:text-5xl font-bold text-white mb-6">
+                Everything You Need to
+                <span class="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+                    Shine Online
+                </span>
+            </h2>
+            <p class="text-xl text-white/80 max-w-3xl mx-auto">
+                DevPort provides all the tools and features you need to create a portfolio that stands out from the crowd.
+            </p>
         </div>
-        <div class="row g-4">
-            <div class="col-md-4">
-                <div class="feature-card text-center p-4">
-                    <div class="feature-icon mb-3">
-                        <i class="fas fa-magic fa-3x text-primary"></i>
-                    </div>
-                    <h4>Easy to Use</h4>
-                    <p class="text-muted">Simple form-based interface. No technical knowledge required.</p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Feature 1 -->
+            <div class="glass-effect rounded-2xl p-8 transform hover:scale-105 transition-all duration-300 group">
+                <div class="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6 group-hover:rotate-12 transition-transform duration-300">
+                    <i class="fas fa-code text-white text-2xl"></i>
                 </div>
+                <h3 class="text-2xl font-bold text-gray-800 mb-4">Developer-Focused</h3>
+                <p class="text-gray-600 leading-relaxed">
+                    Built specifically for developers with sections for projects, skills, experience, and technical expertise.
+                </p>
             </div>
-            <div class="col-md-4">
-                <div class="feature-card text-center p-4">
-                    <div class="feature-icon mb-3">
-                        <i class="fas fa-palette fa-3x text-primary"></i>
-                    </div>
-                    <h4>Beautiful Themes</h4>
-                    <p class="text-muted">Choose from professionally designed themes that look great on any device.</p>
+            
+            <!-- Feature 2 -->
+            <div class="glass-effect rounded-2xl p-8 transform hover:scale-105 transition-all duration-300 group">
+                <div class="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mb-6 group-hover:rotate-12 transition-transform duration-300">
+                    <i class="fas fa-eye text-white text-2xl"></i>
                 </div>
+                <h3 class="text-2xl font-bold text-gray-800 mb-4">Live Preview</h3>
+                <p class="text-gray-600 leading-relaxed">
+                    See your portfolio come to life in real-time as you build it. No surprises, just beautiful results.
+                </p>
             </div>
-            <div class="col-md-4">
-                <div class="feature-card text-center p-4">
-                    <div class="feature-icon mb-3">
-                        <i class="fas fa-download fa-3x text-primary"></i>
-                    </div>
-                    <h4>Export Options</h4>
-                    <p class="text-muted">Download as ZIP file or PDF. Share your portfolio anywhere.</p>
+            
+            <!-- Feature 3 -->
+            <div class="glass-effect rounded-2xl p-8 transform hover:scale-105 transition-all duration-300 group">
+                <div class="w-16 h-16 bg-gradient-to-r from-green-500 to-teal-500 rounded-2xl flex items-center justify-center mb-6 group-hover:rotate-12 transition-transform duration-300">
+                    <i class="fas fa-share-alt text-white text-2xl"></i>
                 </div>
+                <h3 class="text-2xl font-bold text-gray-800 mb-4">Easy Sharing</h3>
+                <p class="text-gray-600 leading-relaxed">
+                    Share your portfolio with custom URLs, download as PDF for applications, or export as ZIP to host anywhere.
+                </p>
+            </div>
+            
+            <!-- Feature 4 -->
+            <div class="glass-effect rounded-2xl p-8 transform hover:scale-105 transition-all duration-300 group">
+                <div class="w-16 h-16 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-2xl flex items-center justify-center mb-6 group-hover:rotate-12 transition-transform duration-300">
+                    <i class="fas fa-bolt text-white text-2xl"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-800 mb-4">Lightning Fast</h3>
+                <p class="text-gray-600 leading-relaxed">
+                    Create a complete portfolio in under 10 minutes. Our intuitive interface makes the process effortless.
+                </p>
+            </div>
+            
+            <!-- Feature 5 -->
+            <div class="glass-effect rounded-2xl p-8 transform hover:scale-105 transition-all duration-300 group">
+                <div class="w-16 h-16 bg-gradient-to-r from-red-500 to-pink-500 rounded-2xl flex items-center justify-center mb-6 group-hover:rotate-12 transition-transform duration-300">
+                    <i class="fas fa-shield-alt text-white text-2xl"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-800 mb-4">Secure & Private</h3>
+                <p class="text-gray-600 leading-relaxed">
+                    Your data is safe with us. Choose to keep portfolios private or share them publicly - you're in control.
+                </p>
+            </div>
+            
+            <!-- Feature 6 -->
+            <div class="glass-effect rounded-2xl p-8 transform hover:scale-105 transition-all duration-300 group">
+                <div class="w-16 h-16 bg-gradient-to-r from-indigo-500 to-blue-500 rounded-2xl flex items-center justify-center mb-6 group-hover:rotate-12 transition-transform duration-300">
+                    <i class="fas fa-magic text-white text-2xl"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-800 mb-4">Professional Themes</h3>
+                <p class="text-gray-600 leading-relaxed">
+                    Choose from carefully crafted themes that make your work shine. From minimal to creative, we've got you covered.
+                </p>
             </div>
         </div>
     </div>
 </section>
 
 <!-- CTA Section -->
-<section class="cta-section bg-light py-5">
-    <div class="container text-center">
-        <h2 class="display-6 fw-bold mb-4">Ready to Build Your Portfolio?</h2>
-        <p class="lead mb-4">Join thousands of developers who trust DevPort</p>
-        <a href="{% url 'portfolio:register' %}" class="btn btn-primary btn-lg">
-            <i class="fas fa-user-plus"></i> Create Free Account
-        </a>
+<section class="py-20 relative">
+    <div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+        <div class="glass-effect rounded-3xl p-12 transform hover:scale-105 transition-all duration-300">
+            <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
+                Ready to Build Your
+                <span class="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                    Amazing Portfolio?
+                </span>
+            </h2>
+            <p class="text-xl text-gray-600 mb-8 leading-relaxed">
+                Join thousands of developers who have already created stunning portfolios with DevPort. 
+                It's free to get started!
+            </p>
+            
+            {% if not user.is_authenticated %}
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="{% url 'portfolio:register' %}" class="btn-primary text-lg px-8 py-4 transform hover:scale-105 transition-all duration-300">
+                        <i class="fas fa-rocket mr-3"></i>
+                        Start Building Now
+                    </a>
+                    <a href="{% url 'portfolio:login' %}" class="btn-secondary text-lg px-8 py-4 transform hover:scale-105 transition-all duration-300">
+                        <i class="fas fa-sign-in-alt mr-3"></i>
+                        I Already Have an Account
+                    </a>
+                </div>
+            {% else %}
+                <a href="{% url 'portfolio:portfolio_create' %}" class="btn-primary text-lg px-8 py-4 transform hover:scale-105 transition-all duration-300">
+                    <i class="fas fa-plus mr-3"></i>
+                    Create Your Next Portfolio
+                </a>
+            {% endif %}
+        </div>
     </div>
 </section>
+
+<style>
+    .animation-delay-2000 {
+        animation-delay: 2s;
+    }
+    .animation-delay-4000 {
+        animation-delay: 4s;
+    }
+</style>
 {% endblock %}
+
