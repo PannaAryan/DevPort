@@ -28,7 +28,18 @@ class Portfolio(models.Model):
     title = models.CharField(max_length=200)
     slug = models.SlugField(unique=True, blank=True)
     is_public = models.BooleanField(default=False)
-    theme = models.CharField(max_length=50, default='minimal_dark')
+    theme = models.CharField(
+        max_length=50,
+        choices=[
+            ('minimal_dark', 'Minimal Dark'),
+            ('creative_burst', 'creative_burst'),
+            ('modern_light', 'Modern_light'),
+            ('gradient_showcase', 'gradient_showcase'),
+            ('tech_noir', 'tech_noir'),
+            ('professional_corporate', 'professional_corporate'),
+        ],
+        default='minimal_dark'
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
