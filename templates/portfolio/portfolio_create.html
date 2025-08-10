@@ -39,7 +39,10 @@
                 <select name="theme" id="{{ form.theme.id_for_label }}" class="form-select">
                     <option value="minimal_dark">Minimal Dark</option>
                     <option value="modern_light">Modern Light</option>
-                    <option value="creative">Creative</option>
+                    <option value="tech_noir">Tech Noir</option>
+                    <option value="creative_burst">Creative Burst</option>
+                    <option value="gradient_showcase">Gradient Showcase</option>
+                    <option value="professional_corporate">Professional Corporate</option>
                 </select>
                 {% if form.theme.errors %}
                     <p class="mt-1 text-sm text-red-600">{{ form.theme.errors.0 }}</p>
