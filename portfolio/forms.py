@@ -79,7 +79,10 @@ class PortfolioForm(forms.ModelForm):
         model = Portfolio
         fields = ['title', 'theme', 'is_public']
         widgets = {
-            'title': forms.TextInput(attrs={'class': 'form-input'}),
+            'title': forms.TextInput(attrs={
+                'class': 'block w-full rounded-md border border-gray-400 bg-white px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm placeholder-gray-400 italic',
+                'placeholder': 'Target Position or Current Role (e.g., "Full Stack Developer")',
+            }),
             'theme': forms.Select(attrs={'class': 'form-select'}),
             'is_public': forms.CheckboxInput(attrs={'class': 'form-checkbox'}),
         }
