@@ -210,6 +210,18 @@ LOGGING = {
             'level': config('LOG_LEVEL', default='INFO'),
             'propagate': False,
         },
+        # Base DB logger
+        'django.db.backends': {
+            'handlers': ['console', 'file'],
+            'level': 'WARNING',  # or ERROR
+            'propagate': False,
+        },
+        # Alias-specific DB logger
+        'django.db.backends.default': {
+            'handlers': ['console', 'file'],
+            'level': 'WARNING',  # or ERROR
+            'propagate': False,
+        },
     },
 }
 
