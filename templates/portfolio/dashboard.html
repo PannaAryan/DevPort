@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+    {% extends 'base.html' %}
 
 {% block title %}Dashboard - DevPort{% endblock %}
 
@@ -35,8 +35,8 @@
                 <i class="fas fa-eye text-green-600 text-xl"></i>
             </div>
             <div class="ml-4">
-                <p class="text-2xl font-bold text-gray-900">{{ portfolios|length }}</p>
-                <p class="text-gray-600">Public Portfolio{{ portfolios|length|pluralize }}</p>
+                <p class="text-2xl font-bold text-gray-900">{{ total_public_portfolios }}</p>
+                <p class="text-gray-600">Public Portfolio{{ total_public_portfolios|pluralize }}</p>
             </div>
         </div>
     </div>
