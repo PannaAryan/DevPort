@@ -64,7 +64,14 @@ def register(request):
 def dashboard(request):
     """User dashboard view"""
     portfolios = Portfolio.objects.filter(user=request.user)
-    return render(request, 'portfolio/dashboard.html', {'portfolios': portfolios})
+    total_public_portfolios = Portfolio.objects.filter(is_public=True).count()
+
+    context = {
+        'portfolios': portfolios,
+        'total_public_portfolios': total_public_portfolios,
+    }
+
+    return render(request, 'portfolio/dashboard.html', context)
 
 
 @login_required
