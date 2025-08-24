@@ -40,13 +40,24 @@ class UserProfileForm(forms.ModelForm):
         model = UserProfile
         fields = ['bio', 'profile_picture', 'location', 'website', 'github_url', 'linkedin_url', 'twitter_url']
         widgets = {
-            'bio': forms.Textarea(attrs={'rows': 4, 'class': 'form-textarea', 'placeholder': 'Tell us about yourself...'}),
-            'location': forms.TextInput(attrs={'class': 'form-input', 'placeholder': 'City, Country'}),
-            'website': forms.URLInput(attrs={'class': 'form-input', 'placeholder': 'https://yourwebsite.com'}),
-            'github_url': forms.URLInput(attrs={'class': 'form-input', 'placeholder': 'https://github.com/yourusername'}),
-            'linkedin_url': forms.URLInput(attrs={'class': 'form-input', 'placeholder': 'https://linkedin.com/in/yourusername'}),
-            'twitter_url': forms.URLInput(attrs={'class': 'form-input', 'placeholder': 'https://twitter.com/yourusername'}),
-            'profile_picture': forms.FileInput(attrs={'class': 'form-file-input', 'accept': 'image/*'}),
+            'bio': forms.Textarea(attrs={
+                'class': 'w-full rounded-lg border border-gray-300 bg-white shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-400 transition p-3'
+            }),
+            'location': forms.TextInput(attrs={
+                'class': 'w-full rounded-lg border border-gray-300 bg-white shadow-sm focus:border-purple-500 focus:ring-2 focus:ring-purple-400 transition p-2'
+            }),
+            'website': forms.URLInput(attrs={
+                'class': 'w-full rounded-lg border border-gray-300 bg-white shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-400 transition p-2'
+            }),
+            'github_url': forms.URLInput(attrs={
+                'class': 'w-full rounded-lg border border-gray-300 bg-white shadow-sm focus:border-gray-600 focus:ring-2 focus:ring-gray-400 transition p-2'
+            }),
+            'linkedin_url': forms.URLInput(attrs={
+                'class': 'w-full rounded-lg border border-gray-300 bg-white shadow-sm focus:border-blue-600 focus:ring-2 focus:ring-blue-400 transition p-2'
+            }),
+            'twitter_url': forms.URLInput(attrs={
+                'class': 'w-full rounded-lg border border-gray-300 bg-white shadow-sm focus:border-sky-500 focus:ring-2 focus:ring-sky-400 transition p-2'
+            }),
         }
     
     def clean_profile_picture(self):
