@@ -38,7 +38,7 @@ class UserProfileForm(forms.ModelForm):
     """Form for editing user profile with enhanced image handling"""
     class Meta:
         model = UserProfile
-        fields = ['bio', 'profile_picture', 'location', 'website', 'github_url', 'linkedin_url', 'twitter_url']
+        fields = ['bio', 'profile_picture', 'location', 'website', 'github_url', 'linkedin_url', 'twitter_url', 'behance_url']
         widgets = {
             'bio': forms.Textarea(attrs={
                 'class': 'w-full rounded-lg border border-gray-300 bg-white shadow-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-400 transition p-3'
@@ -56,6 +56,9 @@ class UserProfileForm(forms.ModelForm):
                 'class': 'w-full rounded-lg border border-gray-300 bg-white shadow-sm focus:border-blue-600 focus:ring-2 focus:ring-blue-400 transition p-2'
             }),
             'twitter_url': forms.URLInput(attrs={
+                'class': 'w-full rounded-lg border border-gray-300 bg-white shadow-sm focus:border-sky-500 focus:ring-2 focus:ring-sky-400 transition p-2'
+            }),
+            'behance_url': forms.URLInput(attrs={
                 'class': 'w-full rounded-lg border border-gray-300 bg-white shadow-sm focus:border-sky-500 focus:ring-2 focus:ring-sky-400 transition p-2'
             }),
         }
