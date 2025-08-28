@@ -3,7 +3,7 @@
 {% block title %}Edit {{ portfolio.title }} - DevPort{% endblock %}
 
 {% block content %}
-<div class="mb-6">
+<div class="mb-6" data-portfolio-slug="{{ portfolio.slug }}">
     <div class="flex justify-between items-center">
         <div>
             <h1 class="text-3xl font-bold text-gray-900">{{ portfolio.title }}</h1>
@@ -340,9 +340,38 @@
 
 {% block extra_js %}
 <script>
-    // Global variables for deletion
+    // Global variables for deletion and portfolio slug
     let deleteType = '';
     let deleteId = '';
+
+    // Get portfolio slug from URL or page data
+    function getPortfolioSlug() {
+        // Try to get from URL first
+        const pathParts = window.location.pathname.split('/');
+        const editIndex = pathParts.indexOf('edit');
+        if (editIndex > 0) {
+            return pathParts[editIndex - 1];
+        }
+
+        // Fallback: try to get from a data attribute or hidden input
+        const slugElement = document.querySelector('[data-portfolio-slug]') || document.querySelector('input[name="portfolio_slug"]');
+        if (slugElement) {
+            return slugElement.getAttribute('data-portfolio-slug') || slugElement.value;
+        }
+
+        // Last resort: extract from preview link
+        const previewLink = document.querySelector('a[href*="/preview/"]');
+        if (previewLink) {
+            const href = previewLink.getAttribute('href');
+            const match = href.match(/portfolio\/([^\/]+)\/preview/);
+            if (match) {
+                return match[1];
+            }
+        }
+
+        console.error('Could not determine portfolio slug');
+        return '';
+    }
 
     // CSRF token for Django
     function getCSRFToken() {
@@ -569,7 +598,7 @@
         document.getElementById('confirmationModal').classList.add('hidden');
 
         // Make AJAX request to delete the item
-        fetch(`/portfolio/ajax/${deleteType}/delete/${deleteId}/`, {
+        fetch(deleteUrl, {
             method: 'POST',  // Changed to POST for better Django compatibility
             headers: {
                 'X-CSRFToken': getCSRFToken(),
