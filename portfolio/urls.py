@@ -34,5 +34,11 @@ urlpatterns = [
     path('portfolio/<slug:slug>/add/skill/', views.add_skill, name='add_skill'),
     path('portfolio/<slug:slug>/add/project/', views.add_project, name='add_project'),
     path('portfolio/<slug:slug>/add/certification/', views.add_certification, name='add_certification'),
+
+    # New AJAX endpoints for update and delete
+    path('portfolio/<slug:slug>/get/<str:item_type>/<int:item_id>/', views.get_portfolio_item, name='get_portfolio_item'),
+    path('portfolio/<slug:slug>/update/<str:item_type>/<int:item_id>/', views.update_portfolio_item, name='update_portfolio_item'),
+    path('portfolio/<slug:slug>/delete/<str:item_type>/<int:item_id>/', views.delete_portfolio_item, name='delete_portfolio_item'),
+    path('portfolio/<slug:slug>/delete/skill/<int:skill_id>/', views.delete_skill, name='delete_skill'),
 ]
 
