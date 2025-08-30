@@ -10,6 +10,7 @@ from django.utils.decorators import method_decorator
 from django.utils.text import slugify
 from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
+from django.views.decorators.http import require_http_methods
 import json
 import zipfile
 import os
@@ -314,4 +315,64 @@ def add_certification(request, slug):
             return JsonResponse({'success': False, 'errors': form.errors})
     
     return JsonResponse({'success': False, 'message': 'Invalid request'})
+
+
+@login_required
+@require_http_methods(["POST"])
+def delete_portfolio_item(request, slug, item_type, item_id):
+    """Delete portfolio items via AJAX"""
+    try:
+        # Get the portfolio first to ensure user owns it
+        portfolio = get_object_or_404(Portfolio, slug=slug, user=request.user)
+
+        # Import models as needed
+        from .models import Experience, Education, Skill, Project, Certification
+
+        model_map = {
+            'experience': Experience,
+            'education': Education,
+            'skill': Skill,
+            'project': Project,
+            'certification': Certification,
+        }
+
+        if item_type not in model_map:
+            return JsonResponse({'error': 'Invalid item type'}, status=400)
+
+        Model = model_map[item_type]
+
+        # Get the item and ensure it belongs to the current portfolio
+        item = get_object_or_404(Model, id=item_id, portfolio=portfolio)
+
+        # Delete the item
+        item.delete()
+
+        return JsonResponse({
+            'success': True,
+            'message': f'{item_type.title()} deleted successfully'
+        })
+
+    except Exception as e:
+        return JsonResponse({
+            'error': str(e)
+        }, status=500)
+
+
+@login_required
+@require_http_methods(["GET"])
+def get_portfolio_item(request, slug, item_type, item_id):
+    ...
+
+
+@login_required
+@require_http_methods(["POST"])
+def update_portfolio_item(request, slug, item_type, item_id):
+    ...
+
+
+@login_required
+@require_http_methods(["POST"])
+def delete_skill(request, slug, skill_id):
+    ...
+
 
