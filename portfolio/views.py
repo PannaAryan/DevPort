@@ -325,8 +325,6 @@ def delete_portfolio_item(request, slug, item_type, item_id):
         # Get the portfolio first to ensure user owns it
         portfolio = get_object_or_404(Portfolio, slug=slug, user=request.user)
 
-        # Import models as needed
-        from .models import Experience, Education, Skill, Project, Certification
 
         model_map = {
             'experience': Experience,
@@ -367,7 +365,88 @@ def get_portfolio_item(request, slug, item_type, item_id):
 @login_required
 @require_http_methods(["POST"])
 def update_portfolio_item(request, slug, item_type, item_id):
-    ...
+    """Update portfolio items via AJAX"""
+    try:
+        # Get the portfolio first to ensure user owns it
+        portfolio = get_object_or_404(Portfolio, slug=slug, user=request.user)
+
+        from .models import Experience, Education, Project, Certification
+
+        model_map = {
+            'experience': Experience,
+            'education': Education,
+            'project': Project,
+            'certification': Certification,
+        }
+
+        if item_type not in model_map:
+            return JsonResponse({'error': 'Invalid item type'}, status=400)
+
+        Model = model_map[item_type]
+        item = get_object_or_404(Model, id=item_id, portfolio=portfolio)
+
+        # Parse JSON data from request
+        data = json.loads(request.body)
+
+        # Update fields based on item type
+        if item_type == 'experience':
+            item.position = data.get('position', item.position)
+            item.company = data.get('company', item.company)
+            if hasattr(item, 'location'):
+                item.location = data.get('location', getattr(item, 'location', ''))
+            item.start_date = data.get('start_date') or item.start_date
+            item.end_date = data.get('end_date') or item.end_date
+            if hasattr(item, 'is_current'):
+                item.is_current = data.get('is_current', getattr(item, 'is_current', False))
+            item.description = data.get('description', item.description)
+
+        elif item_type == 'education':
+            item.institution = data.get('institution', item.institution)
+            item.degree = data.get('degree', item.degree)
+            if hasattr(item, 'field_of_study'):
+                item.field_of_study = data.get('field_of_study', getattr(item, 'field_of_study', ''))
+            item.start_date = data.get('start_date') or item.start_date
+            item.end_date = data.get('end_date') or item.end_date
+            if hasattr(item, 'grade'):
+                item.grade = data.get('grade', getattr(item, 'grade', ''))
+            if hasattr(item, 'description'):
+                item.description = data.get('description', getattr(item, 'description', ''))
+
+        elif item_type == 'project':
+            item.name = data.get('name', item.name)
+            item.description = data.get('description', item.description)
+            if hasattr(item, 'technologies'):
+                item.technologies = data.get('technologies', getattr(item, 'technologies', ''))
+            if hasattr(item, 'github_url'):
+                item.github_url = data.get('github_url', getattr(item, 'github_url', ''))
+            if hasattr(item, 'live_url'):
+                item.live_url = data.get('live_url', getattr(item, 'live_url', ''))
+            if hasattr(item, 'start_date'):
+                item.start_date = data.get('start_date') or getattr(item, 'start_date', None)
+            if hasattr(item, 'end_date'):
+                item.end_date = data.get('end_date') or getattr(item, 'end_date', None)
+
+        elif item_type == 'certification':
+            item.name = data.get('name', item.name)
+            item.issuing_organization = data.get('issuing_organization', item.issuing_organization)
+            item.issue_date = data.get('issue_date') or item.issue_date
+            item.expiry_date = data.get('expiry_date') or getattr(item, 'expiry_date', None)
+            if hasattr(item, 'credential_id'):
+                item.credential_id = data.get('credential_id', getattr(item, 'credential_id', ''))
+            if hasattr(item, 'credential_url'):
+                item.credential_url = data.get('credential_url', getattr(item, 'credential_url', ''))
+
+        item.save()
+
+        return JsonResponse({
+            'success': True,
+            'message': f'{item_type.title()} updated successfully'
+        })
+
+    except Exception as e:
+        return JsonResponse({
+            'error': str(e)
+        }, status=500)
 
 
 @login_required
