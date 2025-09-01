@@ -452,6 +452,23 @@ def update_portfolio_item(request, slug, item_type, item_id):
 @login_required
 @require_http_methods(["POST"])
 def delete_skill(request, slug, skill_id):
-    ...
+    """Delete skill via AJAX"""
+    try:
+        # Get the portfolio first to ensure user owns it
+        portfolio = get_object_or_404(Portfolio, slug=slug, user=request.user)
 
+        from .models import Skill
+        skill = get_object_or_404(Skill, id=skill_id, portfolio=portfolio)
+
+        skill.delete()
+
+        return JsonResponse({
+            'success': True,
+            'message': 'Skill deleted successfully'
+        })
+
+    except Exception as e:
+        return JsonResponse({
+            'error': str(e)
+        }, status=500)
 
