@@ -359,7 +359,78 @@ def delete_portfolio_item(request, slug, item_type, item_id):
 @login_required
 @require_http_methods(["GET"])
 def get_portfolio_item(request, slug, item_type, item_id):
-    ...
+    """Get portfolio item data for editing"""
+    try:
+        # Get the portfolio first to ensure user owns it
+        portfolio = get_object_or_404(Portfolio, slug=slug, user=request.user)
+
+        from .models import Experience, Education, Project, Certification
+
+        model_map = {
+            'experience': Experience,
+            'education': Education,
+            'project': Project,
+            'certification': Certification,
+        }
+
+        if item_type not in model_map:
+            return JsonResponse({'error': 'Invalid item type'}, status=400)
+
+        Model = model_map[item_type]
+        item = get_object_or_404(Model, id=item_id, portfolio=portfolio)
+
+        # Serialize the item data based on type
+        if item_type == 'experience':
+            data = {
+                'id': item.id,
+                'position': item.position,
+                'company': item.company,
+                'location': getattr(item, 'location', ''),
+                'start_date': item.start_date.strftime('%Y-%m-%d') if item.start_date else '',
+                'end_date': item.end_date.strftime('%Y-%m-%d') if item.end_date else '',
+                'is_current': getattr(item, 'is_current', False),
+                'description': item.description,
+            }
+        elif item_type == 'education':
+            data = {
+                'id': item.id,
+                'institution': item.institution,
+                'degree': item.degree,
+                'field_of_study': getattr(item, 'field_of_study', ''),
+                'start_date': item.start_date.strftime('%Y-%m-%d') if item.start_date else '',
+                'end_date': item.end_date.strftime('%Y-%m-%d') if item.end_date else '',
+                'grade': getattr(item, 'grade', ''),
+                'description': getattr(item, 'description', ''),
+            }
+        elif item_type == 'project':
+            data = {
+                'id': item.id,
+                'name': item.name,
+                'description': item.description,
+                'technologies': getattr(item, 'technologies', ''),
+                'github_url': getattr(item, 'github_url', ''),
+                'live_url': getattr(item, 'live_url', ''),
+                'start_date': item.start_date.strftime('%Y-%m-%d') if hasattr(item,
+                                                                              'start_date') and item.start_date else '',
+                'end_date': item.end_date.strftime('%Y-%m-%d') if hasattr(item, 'end_date') and item.end_date else '',
+            }
+        elif item_type == 'certification':
+            data = {
+                'id': item.id,
+                'name': item.name,
+                'issuing_organization': item.issuing_organization,
+                'issue_date': item.issue_date.strftime('%Y-%m-%d') if item.issue_date else '',
+                'expiry_date': item.expiry_date.strftime('%Y-%m-%d') if item.expiry_date else '',
+                'credential_id': getattr(item, 'credential_id', ''),
+                'credential_url': getattr(item, 'credential_url', ''),
+            }
+
+        return JsonResponse(data)
+
+    except Exception as e:
+        return JsonResponse({
+            'error': str(e)
+        }, status=500)
 
 
 @login_required
